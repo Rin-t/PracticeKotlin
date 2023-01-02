@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.internal.notify
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -88,8 +87,11 @@ class MainActivity : AppCompatActivity() {
     private fun setupItemViewClickListener() {
         adapter.setItemViewClickListener(
             object : RecyclerAdapter.OnItemClickListener {
-                override fun onItemClick(pokemon: String) {
+                override fun onItemClick(pokemon: Pokemon) {
                     val intent = Intent(this@MainActivity, PokemonDetailActivity::class.java)
+                    intent.putExtra("name", pokemon.name)
+                    intent.putExtra("image", pokemon.image)
+                    intent.putExtra("id", pokemon.id)
                     startActivity(intent)
                 }
             }

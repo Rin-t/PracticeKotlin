@@ -22,7 +22,7 @@ class RecyclerAdapter(private val pokemonList: ArrayList<Pokemon>): RecyclerView
     private val scope = CoroutineScope(Dispatchers.Main)
 
     interface  OnItemClickListener {
-        fun onItemClick(pokemon: String)
+        fun onItemClick(pokemon: Pokemon)
     }
 
     inner class ViewHolderItem(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -31,8 +31,8 @@ class RecyclerAdapter(private val pokemonList: ArrayList<Pokemon>): RecyclerView
 
         init {
             itemView.setOnClickListener {
-                val name = pokemonList[adapterPosition].name
-                itemViewClickListener.onItemClick(name)
+                val pokemon = pokemonList[adapterPosition]
+                itemViewClickListener.onItemClick(pokemon)
             }
         }
     }
