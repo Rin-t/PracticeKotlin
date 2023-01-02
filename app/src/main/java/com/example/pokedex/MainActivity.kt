@@ -1,5 +1,6 @@
 package com.example.pokedex
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.internal.notify
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -20,7 +22,9 @@ import java.net.URL
 class MainActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
-    private val adapter = RecyclerAdapter()
+    private val pokemonList = ArrayList<Pokemon>()
+    private val adapter = RecyclerAdapter(pokemonList)
+    private val fetchPokemonNumber = 151
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,8 +32,10 @@ class MainActivity : AppCompatActivity() {
         setupRecyclerView()
         setupItemViewClickListener()
 
-        val url = "https://pokeapi.co/api/v2/pokemon/1/"
-        pokemonTask(url)
+        for (i in 1..fetchPokemonNumber) {
+            val url = "https://pokeapi.co/api/v2/pokemon/$i/"
+            pokemonTask(url)
+        }
     }
 
     private fun pokemonTask(url: String) {
@@ -57,10 +63,19 @@ class MainActivity : AppCompatActivity() {
         return response
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun pokemonJsonTask(result: String) {
         val jsonObject = JSONObject(result)
         val name = jsonObject.getString("name")
-        println(name)
+        val sprites = jsonObject.getJSONObject("sprites")
+        val image = sprites.getString("front_default")
+        val id = jsonObject.getInt("id")
+        val pokemon = Pokemon(id, name, image)
+        pokemonList.add(pokemon)
+        if (pokemonList.size == fetchPokemonNumber) {
+            pokemonList.sortBy { it.id }
+            adapter.notifyDataSetChanged()
+        }
     }
 
 
